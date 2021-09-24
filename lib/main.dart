@@ -38,9 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<List<Note>> _notes;
   FirebaseFirestore _firestore;
   TextEditingController _controller = TextEditingController();
+  bool showCompleted = false;
 
   Future<List<Note>> fetchNotes() async {
-    var result = await _firestore.collection('notes').get();
+    var result = await _firestore
+        .collection('notes')
+        .where('completed', isEqualTo: showCompleted)
+        .orderBy('createdAt')
+        .get();
     if (result.docs.isEmpty) {
       return [];
     }
@@ -63,6 +68,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: Icon(
+              showCompleted ? Icons.check_box : Icons.check,
+              size: 20,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                showCompleted = !showCompleted;
+                _notes = fetchNotes();
+              });
+            },
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -84,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     await _firestore.collection('notes').doc(uid).set({
                       'title': _controller.text,
                       'uid': uid,
-                      'completed': false
+                      'completed': false,
+                      'createdAt': DateTime.now().millisecondsSinceEpoch
                     });
                     Navigator.pop(context);
                     setState(() {
