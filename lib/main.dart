@@ -1,7 +1,14 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:image_downloader/image_downloader.dart';
+import 'package:image_picker/image_picker.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -28,12 +35,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<FirebaseApp> _firebaseApp;
+  String imageURL = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _firebaseApp = Firebase.initializeApp();
+  Future<void> uploadImage(XFile file) async {
+    var ref = FirebaseStorage.instance.ref('files/${file.name}');
+
+    var task = await ref.putFile(File(file.path));
+    var fileURL = (await task.ref.getDownloadURL());
+    setState(() {
+      imageURL = fileURL;
+    });
   }
 
   @override
@@ -41,22 +52,30 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            onPressed: imageURL.isEmpty ? null : () async {
+              var id = await ImageDownloader.downloadImage(imageURL);
+              if(id != null) {
+                print("Image is saved! $id");
+              }
+            },
+            icon: Icon(Icons.download),
+          ),
+        ],
       ),
-      body: FutureBuilder(
-          future: _firebaseApp,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting)
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[],
-              ),
-            );
-          }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          var file = await ImagePicker().pickImage(source: ImageSource.gallery);
+          uploadImage(file);
+        },
+        child: Icon(Icons.upload),
+      ),
+      body: Center(
+        child: imageURL.isEmpty
+            ? Text('No image is uploaded.')
+            : Image.network(imageURL),
+      ),
     );
   }
 }
