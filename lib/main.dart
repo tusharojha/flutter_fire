@@ -26,17 +26,17 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Note>> _notes;
-  FirebaseFirestore _firestore;
+  Future<List<Note>>? _notes;
+  late FirebaseFirestore _firestore;
   TextEditingController _controller = TextEditingController();
 
   Future<List<Note>> fetchNotes() async {
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title!),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -127,12 +127,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ListView.builder(
                     itemCount: (snapshot.data as List).length,
                     itemBuilder: (context, index) {
+                      var note = (snapshot.data as List<Note>)[index];
                       return NoteTile(
-                        note: snapshot.data[index],
+                        note: note,
                         onDelete: () async {
                           await _firestore
                               .collection('notes')
-                              .doc((snapshot.data[index] as Note).uid)
+                              .doc(note.uid)
                               .delete();
                           setState(() {
                             _notes = fetchNotes();
@@ -141,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         onCompleted: (dynamic val) async {
                           await _firestore
                               .collection('notes')
-                              .doc((snapshot.data[index] as Note).uid)
+                              .doc(note.uid)
                               .update({
                             'completed': val as bool,
                           });

@@ -5,13 +5,13 @@ import 'models/note.dart';
 class NoteTile extends StatefulWidget {
   final Function onDelete;
   final Function onCompleted;
-  final Note note;
+  final Note? note;
 
   const NoteTile(
-      {Key key,
-      @required this.note,
-      @required this.onCompleted,
-      @required this.onDelete})
+      {Key? key,
+      required this.note,
+      required this.onCompleted,
+      required this.onDelete})
       : super(key: key);
 
   @override
@@ -19,12 +19,12 @@ class NoteTile extends StatefulWidget {
 }
 
 class _NoteTileState extends State<NoteTile> {
-  bool completed;
+  bool? completed;
 
   @override
   void initState() {
     super.initState();
-    completed = widget.note.completed;
+    completed = widget.note!.completed;
   }
 
   @override
@@ -34,7 +34,7 @@ class _NoteTileState extends State<NoteTile> {
         widget.onDelete();
       },
       child: Container(
-        key: Key(widget.note.uid),
+        key: Key(widget.note!.uid),
         margin: EdgeInsets.all(8.0),
         padding: EdgeInsets.all(8.0),
         width: MediaQuery.of(context).size.width,
@@ -52,7 +52,7 @@ class _NoteTileState extends State<NoteTile> {
               child: Container(
                 padding: EdgeInsets.all(6.0),
                 child: Text(
-                  widget.note.title,
+                  widget.note!.title,
                   style: TextStyle(fontSize: 18),
                   overflow: TextOverflow.ellipsis,
                 ),

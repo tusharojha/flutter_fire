@@ -4,7 +4,7 @@ class ChipButton extends StatelessWidget {
   final String title;
   final Function action;
 
-  const ChipButton({Key key, @required this.title, @required this.action})
+  const ChipButton({Key? key, required this.title, required this.action})
       : super(key: key);
 
   @override
