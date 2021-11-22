@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fire/buttons.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import 'models/note.dart';
 import 'note_tile.dart';
@@ -54,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    FirebaseCrashlytics.instance.setCustomKey('userUID', 'tusharojha');
     _firestore = FirebaseFirestore.instance;
     _notes = fetchNotes();
   }
@@ -77,6 +79,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 ChipButton(
                   title: 'Yes',
                   action: () async {
+                    if (_controller.text.isEmpty) {
+                      await FirebaseCrashlytics.instance
+                          .recordError("error", null,
+                              reason: 'a fatal error',
+                              // Pass in 'fatal' argument
+                              fatal: true);
+                    }
                     // This creates an empty document and returns the auto-gen uid.
                     var uid = _firestore.collection('notes').doc().id;
 
@@ -93,7 +102,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     });
                   },
                 ),
-                ChipButton(title: 'No', action: () => Navigator.pop(context)),
+                ChipButton(
+                    title: 'No',
+                    action: () => FirebaseCrashlytics.instance.crash()),
               ],
             ),
           );
