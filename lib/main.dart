@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fire/buttons.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 import 'models/note.dart';
 import 'note_tile.dart';
@@ -55,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: 'HomePage');
     FirebaseCrashlytics.instance.setCustomKey('userUID', 'tusharojha');
     _firestore = FirebaseFirestore.instance;
     _notes = fetchNotes();
@@ -68,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          FirebaseAnalytics.instance.setCurrentScreen(screenName: 'Add Note Screen');
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
@@ -79,6 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ChipButton(
                   title: 'Yes',
                   action: () async {
+                    await FirebaseAnalytics.instance
+                        .logEvent(name: 'add_note', parameters: {
+                      'note': _controller.text,
+                    });
                     if (_controller.text.isEmpty) {
                       await FirebaseCrashlytics.instance
                           .recordError("error", null,
