@@ -9,3 +9,4 @@ A flutter sample project using all major firebase services. This project is a pa
 - 3c_firestore_lec Branch contains Cloud Firestore (Query & Sort operation on Quick Notes)
 - 4_firestore_lec Branch contains Firebase Storage (Pick, Upload, Download Files)
 - 6_firebase_crashlytics Branch contains Firebase Crashlytics (How to setup for android & iOS)
+- 7_firebase_analytics Branch contains Firebase Analytics (How to setup for android & iOS)
