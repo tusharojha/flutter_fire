@@ -12,4 +12,4 @@ A flutter sample project using all major firebase services. This project is a pa
 - 7_firebase_analytics Branch contains Firebase Analytics (How to setup for android & iOS)
 
 
-This project is backed up using Sadaiv.
+This project is backed up using Sadaiv CI.
