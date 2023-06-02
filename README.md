@@ -4,3 +4,4 @@ A flutter sample project using all major firebase services. This project is a pa
 
 - Master Branch contains Firebase Authentication (Google Sign In).
 
+Saved on-chain.
